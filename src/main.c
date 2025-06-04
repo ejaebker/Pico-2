@@ -27,5 +27,4 @@ int main() {
         // Print "Hello, world!" to the serial monitor
         printf("Hello, world!\n");
     }
-    
 }
