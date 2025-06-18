@@ -4,6 +4,7 @@ int main() {
     // Configures our microcontroller to 
     // communicate over UART through the TX/RX pins
     stdio_init_all();
+    autotest();
 
     // Initialize pins 22, 23, 24, 25 
     // (each 1 bit corresponds to a pin, hence 0xff << 22)
@@ -27,4 +28,5 @@ int main() {
         // Print "Hello, world!" to the serial monitor
         printf("Hello, world!\n");
     }
+
 }
