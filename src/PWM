@@ -4,9 +4,12 @@
 #include "hardware/pwm.h"
 #include <math.h>
 
+//Constants
 #define PWM_GPIO 15          // Output pin
 #define CLOCK_DIVIDER 4.0   // PWM clock divider
-#define PWM_WRAP 255         // 8-bit resolution
+#define PWM_WRAP 255        // 8-bit resolution
+
+//Variable declarations 
 
 // Function to initialize PWM on a specific GPIO
 void init_pwm(uint gpio) 
@@ -32,7 +35,7 @@ void run_pwm_spwm(float start_time, float time_length, float sine_freq, float tr
     
     for (uint32_t i = 0; i < num_samples; ++i) {
         // Generate sine and triangle wave values
-        float sine_val = amplitude * sinf(2 * M_PI * sine_freq * time);
+        float sine_val = amplitude * sinf(2 * 3.14 * sine_freq * time);
         float tri_val = 2.0f * (time * tri_freq - floorf(0.5f + time * tri_freq)); // triangle wave from -1 to 1
 
         // Compare sine and triangle to determine PWM duty cycle
@@ -40,6 +43,7 @@ void run_pwm_spwm(float start_time, float time_length, float sine_freq, float tr
         pwm_set_gpio_level(PWM_GPIO, pwm_duty);
 
         sleep_us((uint)(dt * 1e6)); // Delay to match sample rate
+        printf("Time: %.5f | Sine: %.3f | Tri: %.3f | PWM Duty: %u\n", time, sine_val, tri_val, pwm_duty);
         time += dt;
     }
 
