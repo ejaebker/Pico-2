@@ -10,11 +10,11 @@
 //Constants
 #define PWM_GPIO 15          // Output pin
 #define CLOCK_DIVIDER 4.0   // PWM clock divider
-#define PWM_WRAP 255        
+#define PWM_WRAP 255        //PWM setting
 
 //function declarations
-void init_pw(uint); //Code for initalizing the PWM on a specific pin
-void run_pwm_spwm(float, float, float, float);
+void init_pwm(uint); //Code for initalizing the PWM on a specific pin
+void run_pwm_spwm(float, float, float, float); //creates the PWM
 
 // Function to initialize PWM on a specific GPIO
 void init_pwm(uint gpio) 
@@ -24,6 +24,7 @@ void init_pwm(uint gpio)
 
     //initalization;
     gpio_set_function(gpio, GPIO_FUNC_PWM);
+
     sliceNum = pwm_gpio_to_slice_num(gpio);
     pwm_set_wrap(sliceNum, PWM_WRAP);
     pwm_set_clkdiv(sliceNum, CLOCK_DIVIDER);
@@ -42,7 +43,7 @@ void run_pwm_spwm(float startTime, float timeLength, float sinFreq, float triFre
 
     uint32_t numSamples; //the number of samples pmw will be analyzed for
     float time; //time count
-    uint16_t pmwDuty; //pmw duty cycle
+    uint16_t pwmDuty; //pmw duty cycle
 
     //PMW creation
     sliceNum = pwm_gpio_to_slice_num(PWM_GPIO);
@@ -52,14 +53,16 @@ void run_pwm_spwm(float startTime, float timeLength, float sinFreq, float triFre
     for (uint32_t i = 0; i < numSamples; ++i) 
     {
         // Generate sine and triangle wave values
-        float sine_val = amplitude * sinf(2 * M_PI * sinFreq * time);
-        float tri_val = 2.0 * (time * triFreq - floorf(0.5 + time * triFreq)); // triangle wave from -1 to 1
+        float sinValue = amplitude * sinf(2 * M_PI * sinFreq * time);
+        float triValue = 2.0 * (time * triFreq - floorf(0.5 + time * triFreq)); // triangle wave from -1 to 1
 
         // Compare sine and triangle to determine PWM duty cycle
-        pmwDuty = (sine_val > tri_val) ? PWM_WRAP : 0;
-        pwm_set_gpio_level(PWM_GPIO, pmwDuty);
+        pwmDuty = (sinValue > triValue) ? PWM_WRAP : 0;
+        pwm_set_gpio_level(PWM_GPIO, pwmDuty);
 
         sleep_us((uint)(dt * 1e6));
+        printf("Time: %.5f | Sine: %.3f | Tri: %.3f | PWM Duty: %u\n", 
+        time, sinValue, triValue, pwmDuty);
         time += dt;
     }
 
