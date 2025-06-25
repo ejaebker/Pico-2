@@ -43,27 +43,30 @@ void run_pwm_spwm(float startTime, float timeLength, float sinFreq, float triFre
 
     uint32_t numSamples; //the number of samples pmw will be analyzed for
     float time; //time count
+    float sinValue; //amplitude of the sin wave at a given time
+    float triValue; //amplitude of the tri wave at a given time
     uint16_t pwmDuty; //pmw duty cycle
 
     //PMW creation
     sliceNum = pwm_gpio_to_slice_num(PWM_GPIO);
+    
     numSamples = (uint32_t)(timeLength * sampleRate);
     time = startTime;
     
     for (uint32_t i = 0; i < numSamples; ++i) 
     {
         // Generate sine and triangle wave values
-        float sinValue = amplitude * sinf(2 * M_PI * sinFreq * time);
-        float triValue = 2.0 * (time * triFreq - floorf(0.5 + time * triFreq)); // triangle wave from -1 to 1
+        sinValue = amplitude * sinf(2 * M_PI * sinFreq * time);
+        triValue = 2.0 * (time * triFreq - floorf(0.5 + time * triFreq)); // triangle wave from -1 to 1
 
         // Compare sine and triangle to determine PWM duty cycle
         pwmDuty = (sinValue > triValue) ? PWM_WRAP : 0;
         pwm_set_gpio_level(PWM_GPIO, pwmDuty);
 
         sleep_us((uint)(dt * 1e6));
-        printf("Time: %.5f | Sine: %.3f | Tri: %.3f | PWM Duty: %u\n", 
-        time, sinValue, triValue, pwmDuty);
-        time += dt;
+        printf("Time: %.5f | Sine: %.3f | Tri: %.3f | PWM Duty: %u\n", time, sinValue, triValue, pwmDuty);
+
+        time += dt; //step
     }
 
     pwm_set_gpio_level(PWM_GPIO, 0);
